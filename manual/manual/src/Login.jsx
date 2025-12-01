@@ -3,6 +3,16 @@ import { useNavigate } from 'react-router-dom'
 
 function Login() {
   const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const submit = () => {
+    if (username === 'admin' && password === 'admin') {
+      navigate('/form');
+    } else {
+      alert('Login Failed, Try Again');
+    }
+  }
 
   return (
     <div>
@@ -14,7 +24,7 @@ function Login() {
           <input type="password" placeholder="Password" />
         </div>
         <div>
-          <button onClick={() => navigate('/form')}>Submit</button>
+          <button onClick={() => submit}>Submit</button>
           <button onClick={() => navigate('/register')}>Register</button>
         </div>
     </div>

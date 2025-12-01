@@ -4,6 +4,16 @@ import { useNavigate } from 'react-router-dom'
 
 function Register() {
     const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [passCheck, setPassCheck] = useState('');
+    const regCheck = () => {
+        if (password === passCheck) {
+            navigate('/login');
+        } else {
+            alert("Passwords Don't Match Try Again");
+        }
+    }
   return (
     <div>
         <h1>Register</h1>
@@ -13,7 +23,7 @@ function Register() {
         <div className="input">
           <input type="password" placeholder="Password" />
         </div>
-                <div className="input">
+        <div className="input">
           <input type="password" placeholder="Re-enter Password" />
         </div>
         <div>
