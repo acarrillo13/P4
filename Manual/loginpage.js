@@ -7,6 +7,7 @@ const CREATE_END = "http://localhost..."
 export function Login(tokenSetter){
 	const [name, setName] = useState("");
 	const [password, setPassword] = useState("");
+	const navigate = useNavigate();
 
 	const handleSubmit = async function(e){
 		e.preventDefault();
