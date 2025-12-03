@@ -8,7 +8,11 @@ function Login() {
 
   const submit = () => {
     if (username === 'admin' && password === 'admin') {
+      //privleges token or something
       navigate('/form');
+
+    } else if (){ // regular guy
+      navigate('/form')
     } else {
       alert('Login Failed, Try Again');
     }

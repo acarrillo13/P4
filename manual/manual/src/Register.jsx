@@ -9,6 +9,7 @@ function Register() {
     const [passCheck, setPassCheck] = useState('');
     const regCheck = () => {
         if (password === passCheck) {
+            //save account to database, somehow
             navigate('/login');
         } else {
             alert("Passwords Don't Match Try Again");
@@ -27,7 +28,7 @@ function Register() {
           <input type="password" placeholder="Re-enter Password" />
         </div>
         <div>
-          <button onClick={() => navigate('/login')}>Submit</button>
+          <button onClick={() => regCheck}>Submit</button>
 
         </div>
     </div>
