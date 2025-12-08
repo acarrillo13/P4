@@ -13,6 +13,16 @@ function Login() {
       navigate('/form');
 
     } else if (){ // regular guy
+      try {
+        const response = await axios.post('http://localhost:/login', {
+          username: username,
+          password: password
+        }); 
+      } catch (error) {
+        console.error('Error during login:', error);
+        alert('Login Failed, Try Again');
+        return;
+      }
       navigate('/form')
     } else {
       alert('Login Failed, Try Again');
