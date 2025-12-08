@@ -3,7 +3,12 @@ import axios from 'axios'
 
 function Form() {
   return (
- <></>
+    <div>
+        <h1>Form</h1>
+        <div>
+          <button>New Post</button>
+        </div>
+    </div>
   );
 }
 
