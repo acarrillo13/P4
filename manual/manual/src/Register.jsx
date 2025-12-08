@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Login from './Login.jsx'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 function Register() {
     const navigate = useNavigate();
