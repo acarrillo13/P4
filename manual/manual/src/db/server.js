@@ -13,7 +13,6 @@ const db = new sqlite3.Database(dbFile, (err) => {
     else console.log('Connected to SQLite DB:', dbFile);
 });
 
-// Ensure users table exists
 db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE,
