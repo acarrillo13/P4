@@ -12,7 +12,7 @@ function Form() {
         const res = await axios.get('http://localhost:3001/posts');
         setPosts(res.data);
       } catch (err) {
-        console.error(error);
+        console.error(err);
       }
     };
     loadPosts();
@@ -22,8 +22,8 @@ function Form() {
     e.preventDefault();
     if (!text) return;
     try {
-      const res = await axios.post('http://localhost:3001/posts', { user_id: userId, text });
-      setPosts([{ ...res.data, user_id: userId, username: localStorage.getItem("username") }, ...posts]);
+      const res = await axios.post('http://localhost:3001/posts', { user_id: Number(userId), text });
+      setPosts(prev => [{ ...res.data, user_id: Number(userId), username: localStorage.getItem("username") }, ...prev]);
       setText("");
     } catch (err) {
       console.error(err);
@@ -33,7 +33,7 @@ function Form() {
   const deletePost = async(id) => {
     try {
       await axios.delete(`http://localhost:3001/posts/${id}/${userId}`);
-      setPosts(posts.filter(p => p.id !== id));
+      setPosts(prev => prev.filter(p => p.id !== id));
     } catch (err) {
       console.error(err);
     }
@@ -52,8 +52,8 @@ function Form() {
           </form>
           {posts.map((p) => (
             <div key={p.id}>
-              <strong>{p.username}</strong>{p.text}
-              {p.user_id === userId && (
+              <strong>{p.username}</strong> <span>{p.text}</span>
+              {String(p.user_id) === String(userId) && (
                 <button onClick={() => deletePost(p.id)}>Delete</button>
               )}
             </div>
