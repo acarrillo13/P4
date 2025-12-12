@@ -94,15 +94,47 @@ app.post('/posts', (req, res) => {
 });
 
 app.delete('/posts/:id/:userId', (req, res) => {
-    const { id, userId } = req.params;
-    const userIdBody = req.body.user_id;
-    const owner = userId || userIdBody;
-    if (!owner) return res.status(400).json({ message: 'Missing user id' });
+    const { id: idParam, userId: userIdParam } = req.params;
+    const userIdBody = req.body && req.body.user_id;
+    const id = Number(idParam);
+    const ownerId = userIdParam ? Number(userIdParam) : (userIdBody ? Number(userIdBody) : null);
 
-    db.run('DELETE FROM posts WHERE id = ? AND user_id = ?', [id, owner], function (err) {
-        if (err) return res.status(500).json({ message: err.message });
-        if (this.changes === 0) return res.status(403).json({ message: 'Not allowed or not found' });
-        res.json({ message: 'deleted' });
+    if (!id || !ownerId) return res.status(400).json({ message: 'Missing or invalid id/userId' });
+
+    db.get('SELECT user_id FROM posts WHERE id = ?', [id], (err, postRow) => {
+        if (err) {
+            console.error('Error fetching post owner:', err);
+            return res.status(500).json({ message: 'Server error fetching post' });
+        }
+        if (!postRow) return res.status(404).json({ message: 'Post not found' });
+
+        const postOwner = Number(postRow.user_id);
+
+        const performDelete = () => {
+            db.run('DELETE FROM posts WHERE id = ? AND user_id = ?', [id, postOwner], function (delErr) {
+                if (delErr) {
+                    console.error('Error deleting post:', delErr);
+                    return res.status(500).json({ message: 'Server error deleting post' });
+                }
+                if (this.changes === 0) return res.status(404).json({ message: 'Not found or already deleted' });
+                res.json({ message: 'deleted' });
+            });
+        };
+
+        if (postOwner === ownerId) {
+            performDelete();
+            return;
+        }
+
+        db.get('SELECT username FROM users WHERE id = ?', [ownerId], (uErr, userRow) => {
+            if (uErr) {
+                console.error('Error fetching user for admin check:', uErr);
+                return res.status(500).json({ message: 'Server error checking user' });
+            }
+            if (userRow && userRow.username === 'admin') {
+                performDelete();
+            }
+        });
     });
 });
 
