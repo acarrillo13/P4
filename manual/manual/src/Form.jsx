@@ -4,7 +4,8 @@ import axios from 'axios'
 function Form() {
   const [posts, setPosts] = useState([]);
   const [text, setText] = useState("");
-  const userId = localStorage.getItem("userId");
+  const rawUserId = localStorage.getItem("userId");
+  const userId = rawUserId ? Number(rawUserId) : null;
   
   useEffect(() => {
     const loadPosts = async () => {
@@ -21,9 +22,14 @@ function Form() {
   const addPost = async(e) => {
     e.preventDefault();
     if (!text) return;
+    if (!userId) {
+      alert('You must be logged in to create a post');
+      return;
+    }
     try {
-      const res = await axios.post('http://localhost:3001/posts', { user_id: Number(userId), text });
-      setPosts(prev => [{ ...res.data, user_id: Number(userId), username: localStorage.getItem("username") }, ...prev]);
+      const res = await axios.post('http://localhost:3001/posts', { user_id: userId, text });
+      const newPost = res.data || { user_id: userId, username: localStorage.getItem("username"), text };
+      setPosts(prev => [newPost, ...prev]);
       setText("");
     } catch (err) {
       console.error(err);
@@ -31,6 +37,7 @@ function Form() {
   };
 
   const deletePost = async(id) => {
+    if (!userId) return;
     try {
       await axios.delete(`http://localhost:3001/posts/${id}/${userId}`);
       setPosts(prev => prev.filter(p => p.id !== id));

@@ -10,13 +10,17 @@ function Login() {
   const submit = async (e) => {
     e?.preventDefault?.();
     if (username === 'admin' && password === 'admin') {
+      localStorage.setItem('userId', '1');
+      localStorage.setItem('username', 'admin');
       navigate('/form');
       return;
     }
 
     try {
       const response = await axios.post('http://localhost:3001/login', { username, password });
-      if (response.status === 200) {
+      if (response.status === 200 && response.data && response.data.user) {
+        localStorage.setItem('userId', String(response.data.user.id));
+        localStorage.setItem('username', response.data.user.username);
         navigate('/form');
       }
     } catch (error) {

@@ -34,6 +34,15 @@ db.serialize(() => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(user_id) REFERENCES users(id)
     )`);
+    //admin account in db by default
+    db.get('SELECT id FROM users WHERE username = ?', ['admin'], (err, row) => {
+        if (err) return console.error('Error checking admin user', err);
+        if (!row) {
+            db.run('INSERT INTO users (username, password) VALUES (?, ?)', ['admin', 'admin'], function (e) {
+                console.log('Created admin user with id', this.lastID);
+            });
+        }
+    });
 });
 
 app.post('/login', (req, res) => {
