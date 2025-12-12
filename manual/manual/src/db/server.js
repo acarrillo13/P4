@@ -84,7 +84,7 @@ app.post('/posts', (req, res) => {
     });
 });
 
-app.delete('/posts/:id/:userId?', (req, res) => {
+app.delete('/posts/:id/:userId', (req, res) => {
     const { id, userId } = req.params;
     const userIdBody = req.body.user_id;
     const owner = userId || userIdBody;
