@@ -1,19 +1,42 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 function Form() {
   const [posts, setPosts] = useState([]);
   const [text, setText] = useState("");
+  const userId = localStorage.getItem("userId");
   
-  const addPost = (e) => {
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const res = await axios.get('http://localhost:3001/posts');
+        setPosts(res.data);
+      } catch (err) {
+        console.error(error);
+      }
+    };
+    loadPosts();
+  }, []);
+
+  const addPost = async(e) => {
     e.preventDefault();
     if (!text) return;
-    setPosts([...postMessage, {id:Date.com(), text}])
-    setText("");
-  }
+    try {
+      const res = await axios.post('http://localhost:3001/posts', { user_id: userId, text });
+      setPosts([{ ...res.data, user_id: userId, username: localStorage.getItem("username") }, ...posts]);
+      setText("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const deletePost = (id) => {
-    setPosts(postMessage.filter((post) => post.id !== id));
+  const deletePost = async(id) => {
+    try {
+      await axios.delete(`http://localhost:3001/posts/${id}/${userId}`);
+      setPosts(posts.filter(p => p.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -27,14 +50,15 @@ function Form() {
             />
             <button>Create</button>
           </form>
-          {postMessage.map(p=> (
+          {posts.map((p) => (
             <div key={p.id}>
-              {p.text}
-              <button onClick={() => deletePost(p.id)}>Delete</button>
+              <strong>{p.username}</strong>{p.text}
+              {p.user_id === userId && (
+                <button onClick={() => deletePost(p.id)}>Delete</button>
+              )}
             </div>
           ))}
         </div>
-
     </div>
   );
 }
